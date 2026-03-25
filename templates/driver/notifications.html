@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Driver Notifications</h2>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">Ride Requests & Updates</h3>
+    {% if notifications %}
+        {% for note in notifications %}
+        <div style="border-left: 4px solid var(--primary-color); padding-left: 15px; margin-bottom: 20px;">
+            <small style="color: var(--text-muted); font-weight: 600;">{{ note.date_sent.strftime('%b %d, %Y %H:%M') }}</small>
+            <p style="margin-top: 5px;">{{ note.message }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">You have no new notifications.</p>
+    {% endif %}
+</div>
+{% endblock %}

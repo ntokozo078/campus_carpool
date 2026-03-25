@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Admin Dashboard</h2>
+    <p style="color: var(--text-muted);">Overview of System Resources</p>
+</div>
+
+<div class="action-grid">
+    <div class="card" style="text-align: center;">
+        <h3 style="margin-bottom: 10px;">Drivers</h3>
+        <p style="font-size: 2rem; color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">{{ drivers|length }}</p>
+        <a href="{{ url_for('manage_drivers') }}" class="btn" style="width: 100%;">Manage Drivers</a>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="margin-bottom: 10px;">Buses</h3>
+        <p style="font-size: 2rem; color: var(--success); font-weight: bold; margin-bottom: 15px;">{{ buses|length }}</p>
+        <a href="{{ url_for('manage_buses') }}" class="btn btn-success" style="width: 100%;">Manage Buses</a>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="margin-bottom: 10px;">Locations</h3>
+        <p style="font-size: 2rem; color: var(--warning); font-weight: bold; margin-bottom: 15px;">{{ locations|length }}</p>
+        <a href="{{ url_for('manage_locations') }}" class="btn btn-warning" style="width: 100%;">Map Locations</a>
+    </div>
+</div>
+{% endblock %}

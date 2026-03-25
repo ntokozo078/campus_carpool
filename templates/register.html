@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 40px auto;">
+    <div class="page-header" style="margin-bottom: 25px;">
+        <h2>Create an Account</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Join Campus Carpool today</p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required placeholder="John Doe">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required placeholder="john@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required placeholder="082 123 4567">
+        </div>
+        
+        <div class="form-group">
+            <label for="id_number">Student / Staff Number</label>
+            <input type="text" id="id_number" name="id_number" required placeholder="e.g. 12345678">
+        </div>
+        
+
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Create a strong password">
+        </div>
+        
+        <div class="form-actions" style="margin-top: 30px;">
+            <button type="submit" class="btn" style="width: 100%;">Create Account</button>
+        </div>
+    </form>
+    
+    <div style="margin-top: 25px; text-align: center;">
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Already have an account? <br>
+            <a href="{{ url_for('login') }}" style="font-weight: 600; display: inline-block; margin-top: 5px;">Sign In Here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

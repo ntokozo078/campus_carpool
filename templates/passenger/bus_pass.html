@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>System Bus Tracker</h2>
+    <p style="color: var(--text-muted); font-style: italic;">View the live status of all campus buses and their routes.</p>
+</div>
+
+<div class="card" style="margin-bottom: 25px; padding: 15px;">
+    <input type="text" id="busSearch" class="form-control" placeholder="🔍 Search by Bus Number, Route, or Status..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; background-color: var(--bg-color);">
+</div>
+
+<div class="action-grid" id="busList">
+    {% for ride in rides %}
+    <div class="card bus-item" data-search="{{ ride.pickup_location|lower }} to {{ ride.destination|lower }} {{ ride.status|lower }} {{ ride.driver.name|lower }}" style="border-left: 5px solid {% if ride.status == 'Available' %}var(--success){% elif ride.status == 'Incoming' %}#17a2b8{% elif ride.status == 'Busy' %}var(--warning){% elif ride.status == 'Not Available' %}var(--danger){% else %}var(--primary-color){% endif %};">
+        <h3 style="margin-bottom: 10px;">{{ ride.driver.name }}'s Ride</h3>
+        <p style="margin-bottom: 5px;"><strong>Route:</strong> {{ ride.pickup_location }} ➔ {{ ride.destination }}</p>
+        <p style="margin-bottom: 5px;"><strong>Time:</strong> {{ ride.time.strftime('%H:%M') }}</p>
+        <p style="margin-bottom: 5px;"><strong>Seats:</strong> {{ ride.available_seats }}</p>
+        <p style="margin-bottom: 12px;"><strong>Status:</strong> 
+            <span style="font-weight: bold; color: {% if ride.status == 'Available' %}var(--success){% elif ride.status == 'Incoming' %}#17a2b8{% elif ride.status == 'Busy' %}var(--warning){% elif ride.status == 'Not Available' %}var(--danger){% else %}var(--primary-color){% endif %};">
+                {{ ride.status }}
+            </span>
+        </p>
+        
+        {% if ride.status in ['Available', 'Incoming'] and ride.available_seats > 0 %}
+            <form method="POST" action="{{ url_for('book_ride', ride_id=ride.ride_id) }}">
+                <button type="submit" class="btn btn-success" style="width: 100%;">Book Seat</button>
+            </form>
+        {% else %}
+            <button class="btn" style="width: 100%; opacity: 0.6; cursor: not-allowed; background-color: var(--text-muted);" disabled>
+                {% if ride.available_seats == 0 %}Full{% else %}Cannot Book{% endif %}
+            </button>
+        {% endif %}
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">No active buses currently in the system.</p>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('busSearch');
+        const busItems = document.querySelectorAll('.bus-item');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            busItems.forEach(item => {
+                const searchData = item.getAttribute('data-search').toLowerCase();
+                if (searchData.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

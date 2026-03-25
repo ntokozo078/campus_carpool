@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Campus Shuttle Tracker</h2>
+    <p style="color: var(--text-muted); font-style: italic;">Use this live schedule to offer rides where shuttles are delayed or at full capacity.</p>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 25px;">
+    <div id="busMap" style="height: 350px; width: 100%; border-radius: var(--radius) var(--radius) 0 0; border: none; margin-top: 0;"></div>
+    <div style="padding: 15px; background-color: var(--bg-color); font-size: 0.95rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <em>📍 <strong>Live Tracker:</strong> Real-time movement of campus shuttles.</em>
+    </div>
+</div>
+
+<div class="action-grid">
+    {% for ride in rides %}
+    <div class="card" style="background-color: var(--white); border-top: 4px solid {% if ride.status == 'Available' %}var(--success){% elif ride.status == 'Incoming' %}#17a2b8{% elif ride.status == 'Busy' %}var(--warning){% else %}var(--primary-color){% endif %};">
+        <h3 style="margin-bottom: 15px;">{{ ride.driver.name }}'s Ride</h3> 
+        <p style="margin-bottom: 5px;"><strong>ROUTE:</strong> {{ ride.pickup_location }} ➔ {{ ride.destination }}</p> 
+        <p style="margin-bottom: 5px;"><strong>TIME:</strong> {{ ride.time.strftime('%H:%M') }}</p> 
+        <p style="margin-bottom: 5px;"><strong>STATUS:</strong> <span style="font-weight: 700;">{{ ride.status }}</span></p> 
+        <p style="margin-bottom: 15px;"><strong>SEATS:</strong> {{ ride.available_seats }}</p> 
+        <a href="{{ url_for('offer_ride') }}" class="btn btn-success" style="width: 100%;">Offer a Backup Ride</a>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">No active shuttles currently tracking on the map. Create one by offering a ride!</p>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize the map centered on Durban (DUT area)
+        const map = L.map('busMap').setView([-29.8587, 31.0218], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Custom Bus Emoji Icon
+        const busIcon = L.divIcon({
+            html: '<div style="font-size: 28px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🚌</div>',
+            className: 'custom-bus-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+            popupAnchor: [0, -15]
+        });
+
+        const locations = {{ locations | tojson }};
+        const rides = [
+            {% for ride in rides %}
+            {
+                id: {{ ride.ride_id }},
+                driver: "{{ ride.driver.name }}",
+                pickup: "{{ ride.pickup_location }}",
+                destination: "{{ ride.destination }}",
+                status: "{{ ride.status }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        let buses = [];
+
+        rides.forEach(ride => {
+            const startLoc = locations[ride.pickup];
+            const endLoc = locations[ride.destination];
+
+            if (startLoc && endLoc) {
+                // Draw route line
+                L.polyline([[startLoc.lat, startLoc.lng], [endLoc.lat, endLoc.lng]], {
+                    color: ride.status === 'Available' ? '#2ecc71' : (ride.status === 'Incoming' ? '#3498db' : '#f39c12'),
+                    weight: 3,
+                    opacity: 0.6,
+                    dashArray: '5, 10'
+                }).addTo(map);
+
+                // Initialize marker
+                const marker = L.marker([startLoc.lat, startLoc.lng], {icon: busIcon, zIndexOffset: 1000}).addTo(map)
+                    .bindPopup(`<b>${ride.driver}'s Bus</b><br>${ride.pickup} ➔ ${ride.destination}<br>Status: <b>${ride.status}</b>`);
+                
+                buses.push({
+                    marker: marker,
+                    start: startLoc,
+                    end: endLoc,
+                    progress: 0,
+                    speed: 0.005 + Math.random() * 0.01 // Random speed for animation
+                });
+            }
+        });
+
+        // Simulate real-time movement
+        setInterval(() => {
+            buses.forEach(bus => {
+                bus.progress += bus.speed;
+                if (bus.progress > 1) {
+                    bus.progress = 0;
+                }
+                const currentLat = bus.start.lat + (bus.end.lat - bus.start.lat) * bus.progress;
+                const currentLng = bus.start.lng + (bus.end.lng - bus.start.lng) * bus.progress;
+                bus.marker.setLatLng([currentLat, currentLng]);
+            });
+        }, 1000);
+    });
+</script>
+{% endblock %}

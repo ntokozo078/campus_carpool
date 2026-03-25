@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Offer a Ride</h2>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form method="POST" action="{{ url_for('offer_ride') }}">
+        <div class="form-group">
+            <label for="pickup">Pickup Location:</label>
+            <select id="pickup" name="pickup" required class="form-control" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--white);">
+                <option value="" disabled selected>Select from list</option>
+                {% for loc in locations %}
+                    <option value="{{ loc.name }}">{{ loc.name }} ({{ loc.type }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="destination">Destination Campus/Res:</label>
+            <select id="destination" name="destination" required class="form-control" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--white);">
+                <option value="" disabled selected>Where are you going?</option>
+                {% for loc in locations %}
+                    <option value="{{ loc.name }}">{{ loc.name }} ({{ loc.type }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="seats">Available Seats:</label>
+            <input type="number" id="seats" name="seats" min="1" max="6" required placeholder="E.g., 3">
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+            <input type="checkbox" name="recurring" id="recurring" style="width: auto; margin: 0;">
+            <label for="recurring" style="margin: 0; font-weight: normal; font-size: 0.95rem;">Set as a recurring ride (e.g., Every Mon to Fri)</label>
+        </div>
+
+        <div class="form-actions" style="margin-top: 25px;">
+            <button type="submit" class="btn btn-success" style="width: 100%;">Post Ride</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

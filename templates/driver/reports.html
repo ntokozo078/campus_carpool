@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>My Impact Reports</h2>
+</div>
+
+<div class="card" style="text-align: center; border-top: 4px solid var(--success);">
+    <h3 style="color: var(--success); margin-bottom: 20px;">Impact Statistics</h3> 
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+        <div style="background: var(--bg-color); padding: 20px; border-radius: var(--radius); flex: 1; min-width: 150px;">
+            <h1 style="font-size: 2.5rem; margin: 0; color: var(--text-main);">{{ total_rides }}</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Total Rides Offered</p>
+        </div>
+        <div style="background: var(--bg-color); padding: 20px; border-radius: var(--radius); flex: 1; min-width: 150px;">
+            <h1 style="font-size: 2.5rem; margin: 0; color: var(--text-main);">{{ total_passengers }}</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Total Passengers Driven</p>
+        </div>
+        <div style="background: var(--bg-color); padding: 20px; border-radius: var(--radius); flex: 1; min-width: 150px;">
+            <h1 style="font-size: 2.5rem; margin: 0; color: var(--text-main);">{{ avg_rating }} / 5.0</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Average Rating</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">Milestones & Badges</h3> 
+    <ul style="list-style-type: none; padding: 0;">
+        {% if total_rides >= 50 %}
+        <li style="margin-bottom: 15px; background: var(--bg-color); padding: 15px; border-radius: 8px;">🏆 <strong style="color: var(--primary-color);">Eco-Warrior:</strong> 50+ Trips Completed</li>
+        {% endif %}
+        {% if avg_rating >= 4.8 %}
+        <li style="margin-bottom: 15px; background: var(--bg-color); padding: 15px; border-radius: 8px;">⭐ <strong style="color: var(--warning);">Top Rated:</strong> Maintained 4.8+ Rating</li>
+        {% endif %}
+        {% if total_rides >= 10 %}
+        <li style="margin-bottom: 15px; background: var(--bg-color); padding: 15px; border-radius: 8px;">🚗 <strong style="color: var(--secondary-color);">Consistent Commuter:</strong> 10+ Rides completed</li>
+        {% endif %}
+        
+        {% if total_rides == 0 %}
+        <li style="margin-bottom: 10px; color: var(--text-muted); font-style: italic;">Offer your first ride to earn badges!</li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Passenger Reviews</h2>
+</div>
+
+<div class="card" style="text-align: center;">
+    <h3>Overall Rating</h3>
+    <h1 style="color: var(--warning); font-size: 3rem; margin: 15px 0;">{{ "%.1f"|format(avg_rating) }} / 5.0</h1>
+    <p style="color: var(--text-muted);">Based on {{ total_reviews }} passenger reviews</p>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">Recent Feedback</h3>
+    {% if reviews %}
+        {% for review in reviews %}
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
+            <p style="color: var(--warning); font-size: 1.2rem; margin-bottom: 5px;">
+                {% for _ in range(review.rating) %}★{% endfor %}
+                {% for _ in range(5 - review.rating) %}☆{% endfor %}
+            </p>
+            <p style="margin-bottom: 5px; font-style: italic;">"{{ review.comment }}"</p>
+            <small style="color: var(--text-muted); font-weight: 500;">- {{ review.passenger.name }}, {{ review.date_posted.strftime('%b %d') }}</small>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">No reviews yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

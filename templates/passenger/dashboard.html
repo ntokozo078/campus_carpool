@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-header">
+        <h2>Welcome, {{ session.get('name', 'Passenger') }}</h2> 
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="margin-bottom: 20px;">Ride Actions</h3>
+        
+        <div class="action-grid">
+            <a href="{{ url_for('find_ride') }}" class="btn">Request a Ride</a>
+            <a href="{{ url_for('passenger_shuttle') }}" class="btn btn-info">Shuttle Schedule</a>
+            <a href="{{ url_for('passenger_bus_pass') }}" class="btn btn-warning">Bus Pass Status</a>
+        </div>
+        
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid var(--border-color);">
+        
+        <h3 style="margin-bottom: 20px;">Account & Feedback</h3>
+        <div class="action-grid">
+            <a href="{{ url_for('passenger_notifications') }}" class="btn btn-secondary">Notifications 🔔</a>
+            <a href="{{ url_for('passenger_profile') }}" class="btn btn-dark">My Profile 👤</a>
+            <a href="{{ url_for('rate_driver') }}" class="btn btn-success">Rate a Driver ⭐</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 20px;">My Bookings / Schedule</h3>
+        {% if bookings %}
+            {% for booking in bookings %}
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
+                <p><strong>Route:</strong> {{ booking.ride.pickup_location }} ➔ {{ booking.ride.destination }}</p>
+                <p><strong>Date & Time:</strong> {{ booking.ride.date.strftime('%b %d, %Y') }} at {{ booking.ride.time.strftime('%H:%M') }}</p>
+                <p><strong>Driver:</strong> {{ booking.ride.driver.name }} ({{ booking.ride.driver.phone }})</p>
+                <p><strong>Status:</strong> 
+                    <span style="color: {% if booking.status == 'Confirmed' %}var(--success){% else %}var(--warning){% endif %}; font-weight: 700;">
+                        {{ booking.status }}
+                    </span>
+                </p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: var(--text-muted); font-style: italic;">Your active ride and shuttle bookings will appear here.</p>
+        {% endif %}
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('passenger_bookings') }}" class="btn btn-secondary" style="font-size: 0.9rem;">View Full History</a>
+        </div>
+    </div>
+{% endblock %}

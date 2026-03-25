@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Carpool System</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="nav-brand"><a href="/"><strong>Campus Carpool</strong></a></div>
+        <div class="nav-links">
+            {% if session.get('role') == 'passenger' %}
+                <a href="{{ url_for('passenger_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('find_ride') }}">Find Ride</a>
+                <a href="{{ url_for('passenger_bookings') }}">Bookings</a>
+                <a href="{{ url_for('passenger_shuttle') }}">Shuttles</a>
+                <a href="{{ url_for('passenger_notifications') }}">Notifications</a>
+                <a href="{{ url_for('passenger_profile') }}">Profile</a>
+            {% elif session.get('role') == 'driver' %}
+                <a href="{{ url_for('driver_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('offer_ride') }}">Offer Ride</a>
+                <a href="{{ url_for('driver_bookings') }}">Bookings</a>
+                <a href="{{ url_for('driver_reports') }}">Reports</a>
+                <a href="{{ url_for('driver_notifications') }}">Notifications</a>
+                <a href="{{ url_for('driver_profile') }}">Profile</a>
+            {% elif session.get('role') == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+                <a href="{{ url_for('manage_drivers') }}">Drivers</a>
+                <a href="{{ url_for('manage_buses') }}">Buses</a>
+                <a href="{{ url_for('manage_locations') }}">Locations</a>
+            {% endif %}
+            
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('logout') }}" class="nav-logout">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

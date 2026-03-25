@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Welcome, {{ session.get('name', 'Driver') }}</h2>
+</div>
+
+<div class="card" style="text-align: center;">
+    <h3 style="margin-bottom: 20px;">Ride Actions</h3>
+    <div class="action-grid">
+        <a href="{{ url_for('offer_ride') }}" class="btn btn-success">Offer a Ride</a>
+        <a href="{{ url_for('driver_shuttle') }}" class="btn btn-secondary">Shuttle Tracker</a>
+        <a href="{{ url_for('driver_bookings') }}" class="btn btn-info">Passenger Bookings</a>
+    </div>
+
+    <hr style="margin: 30px 0; border: 0; border-top: 1px solid var(--border-color);">
+
+    <h3 style="margin-bottom: 20px;">Account & Feedback</h3>
+    <div class="action-grid">
+        <a href="{{ url_for('driver_reports') }}" class="btn btn-info">My Impact Reports</a>
+        <a href="{{ url_for('driver_notifications') }}" class="btn btn-warning">Notifications 🔔</a>
+        <a href="{{ url_for('driver_reviews') }}" class="btn btn-secondary">Passenger Reviews ⭐</a>
+        <a href="{{ url_for('driver_profile') }}" class="btn btn-dark">My Profile 👤</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">My Active Offered Rides</h3>
+    {% if rides %}
+        {% for ride in rides %}
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
+            <p style="margin-bottom: 5px;"><strong>Route:</strong> {{ ride.pickup_location }} ➔ {{ ride.destination }}</p>
+            <p style="margin-bottom: 5px;"><strong>Date & Time:</strong> {{ ride.date.strftime('%b %d, %Y') }} at {{ ride.time.strftime('%H:%M') }}</p>
+            <p style="margin-bottom: 5px;"><strong>Seats Available:</strong> <span style="font-weight: 700; color: var(--primary-color);">{{ ride.available_seats }}</span></p>
+            <p style="margin-bottom: 15px;"><strong>Current Status:</strong> <span style="font-weight: 700; color: {% if ride.status == 'Available' %}var(--success){% elif ride.status == 'Incoming' %}#17a2b8{% elif ride.status == 'Busy' %}var(--warning){% elif ride.status == 'Not Available' %}var(--danger){% else %}var(--primary-color){% endif %};">{{ ride.status }}</span></p>
+
+            <form method="POST" action="{{ url_for('update_ride_status', ride_id=ride.ride_id) }}" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; max-width: 400px;">
+                <select name="status" class="form-control" style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--white);">
+                    <option value="Available" {% if ride.status == 'Available' %}selected{% endif %}>Available</option>
+                    <option value="Incoming" {% if ride.status == 'Incoming' %}selected{% endif %}>Incoming</option>
+                    <option value="Busy" {% if ride.status == 'Busy' %}selected{% endif %}>Busy</option>
+                    <option value="On a road to destination" {% if ride.status == 'On a road to destination' %}selected{% endif %}>On a road to destination</option>
+                    <option value="Not Available" {% if ride.status == 'Not Available' %}selected{% endif %}>Not Available</option>
+                </select>
+                <button type="submit" class="btn btn-success" style="padding: 6px 12px; font-size: 0.9rem;">Update Status</button>
+            </form>
+            
+            <a href="{{ url_for('driver_bookings') }}" class="btn btn-info" style="padding: 6px 12px; font-size: 0.9rem;">View Passengers</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted); font-style: italic;">Your currently offered rides will appear here.</p>
+    {% endif %}
+</div>
+{% endblock %}

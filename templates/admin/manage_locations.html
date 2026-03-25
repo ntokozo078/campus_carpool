@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Manage Locations</h2>
+</div>
+
+<div class="action-grid">
+    <div class="card">
+        <h3 style="margin-bottom: 20px;">Add New Location via Map</h3>
+        
+        <div id="addLocationMap" style="height: 300px; width: 100%; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 15px;"></div>
+        <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 15px;"><em>💡 <strong>Tip:</strong> Click on the map to set the exact coordinates before submitting.</em></p>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Location Name</label>
+                <input type="text" name="name" required class="form-control" placeholder="e.g. Stratford Residence">
+            </div>
+            <div class="form-group">
+                <label>Location Type</label>
+                <select name="type" required class="form-control" style="width: 100%; padding: 10px; border-radius: var(--radius); border: 1px solid var(--border-color); background-color: var(--white);">
+                    <option value="Residence">Residence</option>
+                    <option value="Campus">Campus</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <input type="hidden" id="latInput" name="latitude" required>
+            <input type="hidden" id="lngInput" name="longitude" required>
+
+            <button type="submit" class="btn btn-warning" style="width: 100%;">Add Location to System</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 20px;">Saved Locations</h3>
+        {% if locations %}
+            <ul style="list-style-type: none; padding: 0;">
+            {% for loc in locations %}
+                <li style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+                    <strong>{{ loc.name }}</strong> ({{ loc.type }})<br>
+                    <span style="color: var(--text-muted); font-size: 0.9em;">Lat: {{ loc.latitude }} | Lng: {{ loc.longitude }}</span>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: var(--text-muted);">No locations saved yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const map = L.map('addLocationMap').setView([-29.8587, 31.0218], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        let marker = null;
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map).bindPopup("Selected Coordinates").openPopup();
+            
+            document.getElementById('latInput').value = lat;
+            document.getElementById('lngInput').value = lng;
+        });
+    });
+</script>
+{% endblock %}

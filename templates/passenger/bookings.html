@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>My Bookings</h2>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">My Rides</h3>
+    {% if bookings %}
+        {% for booking in bookings %}
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
+            <p style="margin-bottom: 5px;"><strong>Route:</strong> {{ booking.ride.pickup_location }} ➔ {{ booking.ride.destination }}</p>
+            <p style="margin-bottom: 5px;"><strong>Driver:</strong> {{ booking.ride.driver.name }} | <strong>Status:</strong> 
+                <span style="color: {% if booking.status == 'Confirmed' %}var(--success){% elif booking.status == 'Pending' %}var(--warning){% else %}var(--text-muted){% endif %}; font-weight: 700;">
+                    {{ booking.status }}
+                </span>
+            </p>
+            <p style="margin-bottom: 15px;"><strong>Time:</strong> {{ booking.ride.date.strftime('%b %d, %Y') }} at {{ booking.ride.time.strftime('%H:%M') }}</p>
+            
+            {% if booking.status in ['Pending', 'Confirmed'] %}
+            <form action="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.9rem;">Cancel Ride</button>
+            </form>
+            {% endif %}
+            
+            {% if booking.status == 'Confirmed' %}
+            <a href="{{ url_for('rate_driver') }}" class="btn btn-warning" style="padding: 6px 12px; font-size: 0.9rem;">Leave a Review</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">You have no bookings yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
